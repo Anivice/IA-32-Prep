@@ -65,4 +65,4 @@ set(CMAKE_C_STANDARD 11)
 ###### Preparation Knowledge for IA-32 ######
 #############################################
 
-add_subdirectory(IA-32_Prepare)
+add_subdirectory(32bit_real_mode)

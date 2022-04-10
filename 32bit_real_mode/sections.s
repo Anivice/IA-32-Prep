@@ -54,24 +54,19 @@
 
 .code16
 .global _start
-.equ app_lba_start, 100 # user application start sector
+.equ app_lba_start, 1   # user application start sector
+.equ target_proj_address, 0x10000  # location where program is ganna loaded to
+.org 0x00
+_start:
 
-.align 16
-.section mbr
-.word 0xFF
+# ld -oformat binary -Ttext=0x7C00 -o myfile.bin myfile.o
+    call    label
+    jmp     .
 
-
-.align 16
-.section mbr2
-.word 0xFF
-loc:
-    jmp loc
-
-.align 16
-.section mbr3
-.word 0xFF
+.org 256
+label:
+    ret
 
 .org 510
 boot_flag:
     .word 0xAA55
-
