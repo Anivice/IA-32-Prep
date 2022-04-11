@@ -34,7 +34,7 @@ endfunction()
 add_single_file(simple_bootsect     TRUE    0x0000)
 add_single_file(advanced_bootsect   TRUE    0x0000)
 add_single_file("1+2+...+100"       TRUE    0x0000)
-add_single_file(sections            FALSE   0x7c00)
+add_single_file(sections            FALSE   0x0000)
 
 # setup NASM, so that NASM can build a pure binary data out of a single file
 set(CMAKE_ASM_NASM_OBJECT_FORMAT bin)
@@ -48,7 +48,15 @@ add_executable(user_proj user_proj.asm)
 
 add_custom_target(make_section_boot_disk ALL
         COMMAND ${CP_EXEC} 32bit_real_mode/sections.bin 32bit_real_mode/disk
-        COMMAND ${DD_EXEC} if=32bit_real_mode/user_proj of=32bit_real_mode/disk
-                           oflag=append conv=notrunc 2> /dev/null > /dev/null
+        #COMMAND ${DD_EXEC} if=32bit_real_mode/user_proj of=32bit_real_mode/disk
+        #                   oflag=append conv=notrunc 2> /dev/null > /dev/null
+        COMMAND echo "Hpeplplpop,pWpoprplpdp!p p" >> 32bit_real_mode/disk
+        COMMAND ${DD_EXEC} if=/dev/zero of=32bit_real_mode/disk oflag=append conv=notrunc bs=485 count=1
         DEPENDS user_proj strip_sections
+        BYPRODUCTS ${BINARY_ROOT_DIR}/32bit_real_mode/disk
+        WORKING_DIRECTORY ${BINARY_ROOT_DIR})
+
+add_custom_target(section_boot
+        ${QEMU_EXEC} -drive file=32bit_real_mode/disk,format=raw,index=0,media=disk -m 16M
+        DEPENDS make_section_boot_disk
         WORKING_DIRECTORY ${BINARY_ROOT_DIR})
