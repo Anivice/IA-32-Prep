@@ -81,18 +81,18 @@ _start:
     # setup LBA28
     mov     $0x1F3,     %dx
     mov     $0x01,      %al
-    out     %al,        (%dx)
+    out     %al,        (%dx)   # logic sector num 7 - 0
 
     inc     %dx
     mov     $0x00,      %al
-    out     %al,        (%dx)
+    out     %al,        (%dx)   # logic sector num 15 - 8
 
     inc     %dx
-    out     %al,        (%dx)
+    out     %al,        (%dx)   # logic sector num 23 - 16
 
     inc     %dx
     mov     $0xE0,      %al
-    out     %al,        (%dx)
+    out     %al,        (%dx)   # logic sector num (lower 4) 27 - 24
 
     # request reading
     mov     $0x1F7,     %dx
@@ -119,52 +119,6 @@ _start:
     loop    .read
 
     jmp     .
-
-my_text:
-.byte ' ', 0x70, 'H', 0x70, 'e', 0x70, 'l', 0x70, 'l', 0x70, 'o', 0x70, ' ', 0x70
-.equ my_text_len, . - my_text
-
-read_hard_disk_0:
-    push   %ax
-    push   %bx
-    push   %cx
-    push   %dx
-    mov    $0x1f2,%dx
-    mov    $0x1,%al
-    out    %al,(%dx)
-    inc    %dx
-    mov    %si,%ax
-    out    %al,(%dx)
-    inc    %dx
-    mov    %ah,%al
-    out    %al,(%dx)
-    inc    %dx
-    mov    %di,%ax
-    out    %al,(%dx)
-    inc    %dx
-    mov    $0xe0,%al
-    or     %ah,%al
-    out    %al,(%dx)
-    inc    %dx
-    mov    $0x20,%al
-    out    %al,(%dx)
-read_hard_disk_0.waits:
-    in     (%dx),%al
-    and    $0x88,%al
-    cmp    $0x8,%al
-    jne    read_hard_disk_0.waits
-    mov    $0x100,%cx
-    mov    $0x1f0,%dx
-read_hard_disk_0.readw:
-    in     (%dx),%ax
-    mov    %ax,(%bx)
-    add    $0x2,%bx
-    loop   read_hard_disk_0.readw
-    pop    %dx
-    pop    %cx
-    pop    %bx
-    pop    %ax
-    ret
 
 .org 510
 boot_flag:
